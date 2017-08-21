@@ -82,8 +82,8 @@ class QzoneSpider(object):
 
 
 if __name__ == '__main__':
-    user = "405630919"
-    password = "x11415269"
+    user = "xxxx"
+    password = "xxxx"
     url = "https://user.qzone.qq.com/{}".format(user)
     qzone_spider = QzoneSpider(user=user, password=password)
     qzone_spider.crawl(root_url=url)
