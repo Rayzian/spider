@@ -1,9 +1,11 @@
 # -*- codind:utf-8 -*-
 
+import os
 import gzip
 import json
 import time
 import datetime
+from inSertData import InsertData
 from multiprocessing.managers import BaseManager
 
 
@@ -16,12 +18,18 @@ class TaskWork(object):
         self.m.connect()
         self.task = self.m.put_task_queue()
 
+        self.insert = InsertData(host='localHost', name='root', password='zhouxiaoxi', database='CNLog')
+
+    def dataSave(self, data):
+        self.insert.insertData(data)
+
 
 class GZipTool(object):
     def __init__(self, bufSize):
         self.bufSize = bufSize
         self.fin = None
         self.fout = None
+        self.task = TaskWork()
 
     def decompress(self, gzFile, dst):
         print "-" * 45
@@ -46,23 +54,42 @@ class GZipTool(object):
 
 if __name__ == '__main__':
     task_work = TaskWork()
+
     gz = GZipTool(bufSize=8192)
-
+    decompress_path = ""
     task = task_work.task
-    try:
-        while (not task.empty()):
-            path = task.get(True, timeout=5)
-            print "get GZFile succeed %s" % path
-            file_name = path.strip().split("/")[-1][:-3]
-            dst = path + '/' + file_name
-            gz.decompress(gzFile=path, dst=dst)
 
-            with open(dst, 'r') as text:
+    while (not task.empty()):
+        try:
+            path = task.get(True, timeout=5)
+            print "get GZFile %s succeed." % path
+            file_name = path.strip().split("/")[-1][:-3]
+            decompress_path = path[:-3]
+            gz.decompress(gzFile=path, dst=decompress_path)
+
+            begin_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+            with open(decompress_path, 'r') as text:
                 for temp in text:
                     json_object = json.loads(temp, encoding="utf-8")
+                    task_work.dataSave(json_object)
+            end_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            istruncatelog = 1
+            if os.path.exists(decompress_path):
+                os.remove(decompress_path)
+            task_work.insert.myCallProc(begin_time, end_time, istruncatelog)
 
-                    # TODO
-                    # MySQL
+        except (EOFError, Exception), e:
+            print e
+            print "end."
+            if os.path.exists(decompress_path):
+                os.remove(decompress_path)
 
-    except EOFError:
-        print "end."
+    # path = r'/home/zhouxiaoxi/cn_log/2017-08-16-10.gz'
+    # file_name = path.strip().split("/")[-1][:-3]
+    # decompress_path = path[:-3]
+    # gz.decompress(gzFile=path, dst=decompress_path)
+    #
+    # with open(decompress_path, 'r') as text:
+    #     for temp in text:
+    #         json_object = json.loads(temp, encoding="utf-8")

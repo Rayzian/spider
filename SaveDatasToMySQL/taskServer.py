@@ -4,7 +4,8 @@ import os
 import sys
 import time
 import Queue
-from multiprocessing.managers import BaseManager
+import subprocess
+from multiprocessing.managers import BaseManager, Process
 
 
 class TaskServer(object):
@@ -30,8 +31,9 @@ class TaskServer(object):
             return gzfile_list
 
     def startWorkServer(self):
-        current_path = sys.path[0] + '/workServer.py'
-        cmd = "python {}".format(current_path)
+        current_path = sys.path[0]
+        cmd = "python {}/workServer.py".format(current_path)
+        # subprocess.Popen(cmd.split(" "))
         os.system(cmd)
 
     def queueClose(self):
@@ -47,17 +49,22 @@ if __name__ == '__main__':
     task = manager.put_task_queue()
 
     gzfile_list = server.getLogFile(file_path=folder_path)
+    workserver_proc = Process(target=server.startWorkServer)
+    workserver_proc.start()
 
-    for i in gzfile_list:
-        task.put(i)
+    map(lambda x: task.put(x), gzfile_list)
+    # for i in range(5):
+    #     server.startWorkServer()
 
-    if not task.empty():
-        for i in range(5):
-            server.startWorkServer()
-    else:
-        time.sleep(1)
-        for i in range(5):
-            server.startWorkServer()
+    # manager.get_server().serve_forever()
+
+    # if not task.empty():
+    #     for i in range(5):
+    #
+    # else:
+    #     time.sleep(1)
+    #     for i in range(5):
+    #         server.startWorkServer()
 
     while True:
         if task.empty():
