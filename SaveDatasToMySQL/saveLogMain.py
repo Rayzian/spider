@@ -10,8 +10,6 @@ import threading
 import time
 from argUtil import genParserClient
 from multiprocessing import Process, Queue
-from optparse import OptionGroup, OptionParser
-
 
 class _GZipTool(object):
     def __init__(self, bufSize):
@@ -124,11 +122,11 @@ class LogIntoDataBase(object):
 if __name__ == '__main__':
     try:
         config, _ = genParserClient()
-        folder_path = config.dir # -d
-        host = config.host # -h
-        name = config.user # -u
-        password = config.password # -p
-        database = config.database # -db
+        folder_path = config.dir
+        host = config.local
+        name = config.user
+        password = config.password
+        database = config.database
         log_data = LogIntoDataBase(host=host, name=name, password=password, database=database)
         q = Queue()
         getgzfile_proc = Process(target=log_data.getfile, args=(folder_path, q,))
