@@ -3,7 +3,7 @@
 import Queue
 import re
 from bs4 import BeautifulSoup
-from AutoHomeSpider.URLDownloader import downloader
+from URLDownloader import downloader
 
 
 class HTMLParser(object):

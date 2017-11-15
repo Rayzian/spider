@@ -16,7 +16,7 @@ def start_work(q):
 
     print "work start."
     while (not q.empty()):
-        for i in xrange(20):
+        for i in xrange(5):
             try:
                 index_list.append(q.get(timeout=1))
             except Exception as e:
