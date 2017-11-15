@@ -91,19 +91,20 @@ class CarInfoParser(object):
                     break
 
     def carParser(self, url):
-        web_data = downloader(url=url)
-        if web_data:
-            series_id = re.compile(r'/(\d+)/').findall(string=url)[0]
+        if url:
+            web_data = downloader(url=url)
+            if web_data:
+                series_id = re.compile(r'/(\d+)/').findall(string=url)[0]
 
-            soup = BeautifulSoup(markup=web_data, features="lxml")
-            car_brand = soup.find(name="div", attrs={"class": "subnav-title-name"})
-            if car_brand:
-                car_brand = car_brand.contents[1].next[:-1]
-            car_spec_list = soup.find(name="div", attrs={"id": "speclist20"}).attrs["data-list"].split(",")
+                soup = BeautifulSoup(markup=web_data, features="lxml")
+                car_brand = soup.find(name="div", attrs={"class": "subnav-title-name"})
+                if car_brand:
+                    car_brand = car_brand.contents[1].next[:-1]
+                car_spec_list = soup.find(name="div", attrs={"id": "speclist20"}).attrs["data-list"].split(",")
 
-            for car_spec in car_spec_list:
-                car_link = soup.find("p", attrs={"data-gcjid": car_spec}).parent.contents[1].contents[1].attrs["href"]
-                web_url = "https://www.autohome.com.cn%s" % car_link
-                brand = self.infoParser(url=web_url, series_id=car_spec, car_brand=car_brand)
-                if brand:
-                    self.dealerParses(series_id=series_id, car_id=car_spec, brand=brand)
+                for car_spec in car_spec_list:
+                    car_link = soup.find("p", attrs={"data-gcjid": car_spec}).parent.contents[1].contents[1].attrs["href"]
+                    web_url = "https://www.autohome.com.cn%s" % car_link
+                    brand = self.infoParser(url=web_url, series_id=car_spec, car_brand=car_brand)
+                    if brand:
+                        self.dealerParses(series_id=series_id, car_id=car_spec, brand=brand)
