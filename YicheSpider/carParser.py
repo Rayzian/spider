@@ -12,7 +12,7 @@ class Parser(object):
         self.engine_pattern1 = re.compile(r'<span class="info">(\d+\.\dL)?</span>')
 
     def car_info_parser(self, car_dict):
-        web_data = downloader(url=car_dict["url"])
+        web_data = downloader(url=car_dict)
 
         if web_data:
             soup = BeautifulSoup(markup=web_data, features="lxml")
@@ -79,14 +79,14 @@ class Parser(object):
                     if len(delaer.contents) == 4:
                         delaer_data = {
                             "local": delaer.contents[2].text.strip().split(":")[-1],
-                            "name": delaer.contents[0].text,
+                            "name": delaer.contents[0].contents[0].text,
                             "phoneNumber": delaer.contents[3].contents[1].next,
                             "car_id": car_dict["car_id"]
                         }
                     elif len(delaer.contents) == 3:
                         delaer_data = {
                             "local": delaer.contents[1].text.strip().split(":")[-1],
-                            "name": delaer.contents[0].text,
+                            "name": delaer.contents[0].contents[0].text,
                             "phoneNumber": delaer.contents[2].contents[1].next,
                             "car_id": car_dict["car_id"]
                         }

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+import os
 import re
 from URLDownloader import downloader
 from myRedis import MyRedis
