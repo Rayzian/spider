@@ -73,6 +73,7 @@ class MySimuCrawl(object):
 
 
     def parser_company(self, driver, company_url):
+        info_dict = {}
         driver.get(company_url)
         driver.set_page_load_timeout(50)
 
@@ -81,11 +82,11 @@ class MySimuCrawl(object):
 
         company_name = soup.find(name="span", attrs={"class": "f18 in-block vertival-middle sec-c2"})
         if company_name:
-            company_name = company_name.text
+            info_dict["company_name"] = company_name.text
 
         legal_person = soup.find(name="div", attrs={"class": "f18 overflow-width sec-c3"})
         if legal_person:
-            legal_person = legal_person.contents[1].text
+            info_dict["legal_person"] = legal_person.contents[1].text
 
 if __name__ == '__main__':
     user = "17381540262"
