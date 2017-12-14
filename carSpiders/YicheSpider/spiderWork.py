@@ -4,23 +4,24 @@ import time
 import threadpool
 from htmlParser import HTMLParser
 from myRedis import MyRedis
-from carInfo import CarInfo
+from carParser import Parser
 
 
-def start_work(db, num, additional=False):
-    info_parse = CarInfo()
+def start_work(db, num, additional):
+    info_parse = Parser()
     r = MyRedis(db, additional)
-    html_parse = HTMLParser(db=db)
+    html_parse = HTMLParser(db=db, additional=additional)
 
-    
     if not r.check_urls_number():
-        html_parse.get_car_detail_url()
+        html_parse.parse()
+        print "sleep 180s before start parser"
+        time.sleep(180)
 
-    while(r.check_urls_number()):
+    while (r.check_urls_number()):
         urls_list = r.get_urls(num=num)
         print len(urls_list)
         pool = threadpool.ThreadPool(len(urls_list))
-        requests = threadpool.makeRequests(info_parse.car_parse, urls_list)
+        requests = threadpool.makeRequests(info_parse.car_parser, urls_list)
         [pool.putRequest(req) for req in requests]
         pool.wait()
         print "sleep 10S"
@@ -30,7 +31,9 @@ def start_work(db, num, additional=False):
 
 
 if __name__ == '__main__':
-    start_work(db="xcarInfo", num=10, additional=False)
+
+    start_work(db="yicheInfo", num=10, additional=True)
+
 
 
 

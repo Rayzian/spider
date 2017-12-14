@@ -18,6 +18,7 @@ def downloader(url):
             fail.write("\n")
 
         print "Failed requests ", url
+        count = 0
         return None
 
     try:
