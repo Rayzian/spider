@@ -33,7 +33,11 @@ class Parse(object):
             ellipsis_list = soup.find_all(name="li", attrs={"class": "ellipsis"})
             if ellipsis_list:
                 movie_type = ellipsis_list[0].text.strip()
+                if not movie_type:
+                    movie_type = "null"
                 local = ellipsis_list[1].text.split("/")[0].strip()
+                if not local:
+                    local = "null"
 
             celebrity_container_div_list = soup.find_all(name="div", attrs={"class": "celebrity-container"})
             if celebrity_container_div_list:

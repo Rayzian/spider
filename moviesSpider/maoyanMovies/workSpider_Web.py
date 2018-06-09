@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import traceback
 import time
 from HTMLParse import Parse
 from URLDownloader import download
@@ -11,8 +12,12 @@ def start_work(fun1, fun2):
         url = fun1.get_urls()
         print url
         if url:
-            web_data = download(url=url, render=True)
-            fun2.page_parse(web_data=web_data, url=url)
+            try:
+                web_data = download(url=url, render=True)
+                fun2.page_parse(web_data=web_data, url=url)
+            except Exception as e:
+                print traceback.format_exc(e)
+
         print "sleep 15S"
         time.sleep(15)
 
@@ -22,10 +27,7 @@ def start_work(fun1, fun2):
 if __name__ == '__main__':
     year_id_dict = {
         "14": 4,
-        "13": 32,
-        "12": 47,
-        "11": 43,
-        "10": 36
+        "13": 32
     }
     first_url = "http://maoyan.com/films?yearId={yearId}"
     next_url = "http://maoyan.com/films?yearId={yearId}&offset={offset}"
@@ -43,7 +45,7 @@ if __name__ == '__main__':
                 else:
                     url = next_url.format(yearId=year_id, offset=(int(temp) * 30))
                 print url
-                web_data, flag = download(url=url)
+                web_data = download(url=url)
                 movie_url_list = parse.get_movies_url(web_data=web_data)
                 map(lambda x: r.save_urls(x), movie_url_list)
                 print "sleep 10s for get_movie_url"
