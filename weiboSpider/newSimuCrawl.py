@@ -4,8 +4,7 @@
 All rights Reserved, Designed By Mign.cn
 Title ： simuCrawl.py
 Description : 运营商微博文章爬虫
-Author : chenjide
-Changed: zhouxiaoxi
+Author : zhouxiaoxi
 Date : 2018年2月4日
 Version : 0.1
 """
